@@ -1,8 +1,7 @@
 import React from 'react';
-import { css } from 'emotion';
+import styled from 'react-emotion'
 
-const ContentCard = ({ children }) => <div className={contentCard}>{children}</div>
-const contentCard = css`
+const ContentCard = styled('div')`
     width: 100%;
     box-sizing: border-box;
     background-color: white;
@@ -10,30 +9,33 @@ const contentCard = css`
     margin: .5em 0em;
 `
 
-const ContentCardText = ({ children }) => <div className={contentCardText}>{children}</div>
-const contentCardText = css`
+const ContentCardText = styled('div')`
     width: 100%;
-    padding: 1em;
+    padding: 1em 1em .5em 1em;
     box-sizing: border-box;
+    font-weight: 700;
 `
 
-const ContentCardFooter = ({ children }) => <div className={contentCardFooter}>{children}</div>
-const contentCardFooter = css`
+const ContentCardFooter = styled('div')`
     width: 100%;
-    padding: .25em 1em;
+    padding: .25em 1em .5em 1em;
     display: flex;
     box-sizing: border-box;
 `
 
-const ContentCardAction = ({ children }) => <button className={contentCardAction}>{children}</button>
-const contentCardAction = css`
+const ContentCardAction = styled('button')`
     border: none;
-    background-color: red;
+    background-color: ${props => props.theme.primary};
     box-shadow: none;
+    border-radius: 4px;
+    color: white;
+    height: 2em;
+    margin-right: .5em;
 `
 
 export {
     ContentCard,
     ContentCardText,
-    ContentCardFooter
+    ContentCardFooter,
+    ContentCardAction
 }
