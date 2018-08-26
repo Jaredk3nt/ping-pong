@@ -3,17 +3,21 @@ import { css } from 'emotion';
 import { ThemeProvider } from 'emotion-theming'
 // Components
 import ScrollableView from './components/ScrollableView';
-import { 
-    ContentCard, 
+import AddPlayerForm from './components/AddPlayerForm';
+import AddPlayerButton from './components/AddPlayerButton';
+import {
+    ContentCard,
     ContentCardText,
-    ContentCardFooter, 
-    ContentCardAction 
+    ContentCardFooter,
+    ContentCardAction
 } from './components/ContentCard';
-// Variables
 import theme from './theme.js'
+
+// Variables
 const navHeight = '3em';
 
 class App extends Component {
+    id;
     constructor(props) {
         super(props);
         this.state = {
@@ -25,7 +29,24 @@ class App extends Component {
                 { name: 'Jared', id: 0 },
                 { name: 'Adrian', id: 1 }
             ],
+            addingPlayer: false
         }
+        this.id = 1
+        this.addPlayer = this.addPlayer.bind(this);
+        this.addingPlayer = this.addingPlayer.bind(this);
+    }
+
+    addingPlayer(addingPlayer) {
+        this.setState({ addingPlayer: addingPlayer }) // making input field show up
+    }
+
+    addPlayer(name) {
+        this.id++;
+        this.setState({
+            originalPlayerList: this.state.originalPlayerList.concat({ name: name, id: this.id }),
+            playerList: this.state.playerList.concat({ name: name, id: this.id }),
+            addingPlayer: false // reverting to input field
+        });
     }
 
     render() {
@@ -40,6 +61,13 @@ class App extends Component {
                                 <h1>Hi</h1>
                             </div>
                             <ScrollableView>
+                                <div className={addPlayerForm}>
+                                    {
+                                        this.state.addingPlayer ?
+                                            <AddPlayerForm addPlayer={this.addPlayer} addingPlayer={this.addingPlayer} /> :
+                                            <AddPlayerButton addingPlayer={this.addingPlayer} />
+                                    }
+                                </div>
                                 {
                                     playerList.map((player) => (
                                         <ContentCard>
@@ -82,6 +110,11 @@ const pageBody = css`
 const content = css`
     width: 100%;
     height: 100%;
+`;
+
+const addPlayerForm = css`
+    width: 100%;
+    height: 6%;
 `;
 
 export default App;
