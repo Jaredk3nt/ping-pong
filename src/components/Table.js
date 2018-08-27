@@ -30,7 +30,7 @@ const CenterFlex = styled('div')`
 const PingPongTable = styled('div')`
     position: relative;
     width: 32em;
-    height: 20em;
+    height: 18em;
     background-color: ${props => props.theme.primary};
     border: 4px solid white;
     outline: 2px solid ${props => props.theme.primary};
@@ -49,7 +49,7 @@ const PingPongTable = styled('div')`
         width: 100%;
         border: 1px solid white;
         position: absolute;
-        top: 50%;
+        top: calc(50% - 1px);
         left: 0;
         box-sizing: border-box;
     }
