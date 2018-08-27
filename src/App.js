@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { css } from 'emotion';
-import { ThemeProvider } from 'emotion-theming'
+import { ThemeProvider } from 'emotion-theming';
 // Components
 import ScrollableView from './components/ScrollableView';
 import { 
@@ -9,51 +9,92 @@ import {
     ContentCardFooter, 
     ContentCardAction 
 } from './components/ContentCard';
+import Navbar from './components/Navbar';
+import Table from './components/Table';
 // Variables
-import theme from './theme.js'
-const navHeight = '3em';
+import { theme, colors } from './theme.js';
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            originalPlayerList: [
-                { name: 'Jared', id: 0 },
-                { name: 'Adrian', id: 1 },
-            ],
             playerList: [
-                { name: 'Jared', id: 0 },
-                { name: 'Adrian', id: 1 }
+                { name: 'Jared', id: 0, games: 0 },
+                { name: 'Adrian', id: 1, games: 0 }
             ],
+            theming: {
+                theme,
+                currentColor: 'blue',
+            },
         }
     }
 
-    render() {
+    changeColor = () => {
+        const { theming: { theme, currentColor} } = this.state;
+        let newColor,
+            newTheme = theme;
+        switch(currentColor) {
+            case 'blue':
+                newColor = 'green';
+                break;
+            case 'green':
+                newColor = 'red';
+                break;
+            case 'red':
+                newColor = 'blue';
+                break;
+        }
+        newTheme.primary = colors[newColor];
+        this.setState({
+            theming: {
+                theme: newTheme,
+                currentColor: newColor
+            }
+        });
+    }
+
+    playerLeave = (player) => {
         const { playerList } = this.state;
+        this.setState({
+            playerList: playerList.filter(p => p.name !== player.name),
+        })
+    }
+
+    render() {
+        const { playerList, theming: { theme } } = this.state;
         return (
             <React.Fragment>
                 <ThemeProvider theme={theme}>
                     <React.Fragment>
-                        <div className={navbar}></div>
+                        <Navbar>
+                            Ping Pong
+                            <button onClick={this.changeColor}>Change Color</button>
+                        </Navbar>
                         <div className={pageBody}>
                             <div className={content}>
-                                <h1>Hi</h1>
+                                <Table />
                             </div>
-                            <ScrollableView>
-                                {
-                                    playerList.map((player) => (
-                                        <ContentCard>
-                                            <ContentCardText>
-                                                {player.name}
-                                            </ContentCardText>
-                                            <ContentCardFooter>
-                                                <ContentCardAction>Sit out</ContentCardAction>
-                                                <ContentCardAction>Leave game</ContentCardAction>
-                                            </ContentCardFooter>
-                                        </ContentCard>
-                                    ))
-                                }
-                            </ScrollableView>
+                            <div>
+                                <ScrollableView>
+                                    {
+                                        playerList.map((player) => (
+                                            <ContentCard>
+                                                <ContentCardText>
+                                                    {player.name}
+                                                </ContentCardText>
+                                                <ContentCardFooter>
+                                                    <ContentCardAction>Sit out</ContentCardAction>
+                                                    <ContentCardAction 
+                                                        onClick={() => this.playerLeave(player)}>
+                                                        Leave game
+                                                    </ContentCardAction>
+                                                </ContentCardFooter>
+                                            </ContentCard>
+                                        ))
+                                    }
+                                </ScrollableView>
+                            </div>
+                            
                         </div>
                     </React.Fragment>
                 </ThemeProvider>
@@ -63,18 +104,11 @@ class App extends Component {
 }
 
 // Styles
-const navbar = css`
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: ${navHeight};
-    background-color: red;
-`;
+
 const pageBody = css`
     width: 100vw;
     height: 100vh;
-    padding-top: ${navHeight};
+    padding-top: ${theme.navHeight};
     display: grid;
     grid-template-columns: 1fr 20%;
     box-sizing:border-box;
