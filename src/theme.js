@@ -1,7 +1,7 @@
 const colors = {
     blue: '#234e87',
     green: '#3faa6d',
-    red: '#e05138'
+    red: '#e83333'
 }
 
 const theme = {

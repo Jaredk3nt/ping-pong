@@ -17,11 +17,22 @@ import { theme, colors } from './theme.js';
 class App extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
             playerList: [
                 { name: 'Jared', id: 0, games: 0 },
-                { name: 'Adrian', id: 1, games: 0 }
+                { name: 'Adrian', id: 1, games: 0 },
             ],
+            currentPlayers: {
+                left: {
+                    player1: {},
+                    player2: {},
+                },
+                right: {
+                    player1: {},
+                    player2: {},
+                },
+            },
             theming: {
                 theme,
                 currentColor: 'blue',
@@ -61,7 +72,7 @@ class App extends Component {
     }
 
     render() {
-        const { playerList, theming: { theme } } = this.state;
+        const { playerList, theming: { theme }, currentPlayers } = this.state;
         return (
             <React.Fragment>
                 <ThemeProvider theme={theme}>
@@ -72,7 +83,7 @@ class App extends Component {
                         </Navbar>
                         <div className={pageBody}>
                             <div className={content}>
-                                <Table />
+                                <Table players={currentPlayers} />
                             </div>
                             <div>
                                 <ScrollableView>
@@ -94,7 +105,6 @@ class App extends Component {
                                     }
                                 </ScrollableView>
                             </div>
-                            
                         </div>
                     </React.Fragment>
                 </ThemeProvider>
@@ -104,14 +114,15 @@ class App extends Component {
 }
 
 // Styles
-
 const pageBody = css`
     width: 100vw;
     height: 100vh;
+    max-height: 100vh;
     padding-top: ${theme.navHeight};
     display: grid;
     grid-template-columns: 1fr 20%;
-    box-sizing:border-box;
+    box-sizing: border-box;
+    overflow: hidden;
 `;
 const content = css`
     width: 100%;
