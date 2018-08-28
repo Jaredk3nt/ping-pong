@@ -5,11 +5,19 @@ import styled from 'react-emotion';
 // Utis / Variables
 import { TeamPropType } from '../propTypes';
 
-const Table = ({ players, onWin }) => {
+const Table = ({ players, onGameEnd }) => {
     return (
-        <CenterFlex>
-            <PingPongTable />
-        </CenterFlex>
+        <React.Fragment>
+            <CenterFlex>
+                <TablePlayers players={players.left}/>
+                <PingPongTable />
+                <TablePlayers players={players.right}/>
+            </CenterFlex>
+            <CenterFlex>
+                <button onClick={() => onGameEnd('left')}>Team 1</button>
+                <button onClick={() => onGameEnd('right')}>Team 2</button>
+            </CenterFlex>
+        </React.Fragment>
     )
 }
 // Table props for the players
@@ -24,8 +32,6 @@ const CenterFlex = styled('div')`
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
 `;
 const PingPongTable = styled('div')`
     position: relative;
@@ -54,5 +60,26 @@ const PingPongTable = styled('div')`
         box-sizing: border-box;
     }
 `;
+const TablePlayers = ({ players }) => (
+    <TablePlayersContainer>
+        <TablePlayer>{players.player1.name}</TablePlayer>
+        <TablePlayer>{players.player2.name}</TablePlayer>
+    </TablePlayersContainer>
+);
+const TablePlayersContainer = styled('div')`
+    height: 18em;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 0em 2em;
+`;
+const TablePlayer = styled('div')`
+    width: 100%;
+    min-width: 6em;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+`
 
 export default Table;

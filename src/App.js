@@ -25,12 +25,12 @@ class App extends Component {
             ],
             currentPlayers: {
                 left: {
-                    player1: {},
-                    player2: {},
+                    player1: { name: 'Nathan', id: 2, games: 0 },
+                    player2: { name: 'JD', id: 3, games: 0 },
                 },
                 right: {
-                    player1: {},
-                    player2: {},
+                    player1: { name: 'Jonathan', id: 4, games: 0 },
+                    player2: { name: 'Kyle', id: 5, games: 0 },
                 },
             },
             theming: {
@@ -71,6 +71,23 @@ class App extends Component {
         })
     }
 
+    onGameEnd = (winningSide) => {
+        let { currentPlayers, playerList } = this.state;
+        let winners = currentPlayers[winningSide];
+        let losers = currentPlayers[winningSide === 'left' ? 'right' : 'left'];
+        // Add losers back to the playerList
+        playerList = [...playerList, losers.player1, losers.player2 ];
+        // Move winners
+        currentPlayers = { 
+            left: { player1: winners.player1, player2: playerList.shift() }, 
+            right: { player1: winners.player2, player2: playerList.shift() } 
+        };
+        this.setState({
+            playerList,
+            currentPlayers
+        });
+    }
+
     render() {
         const { playerList, theming: { theme }, currentPlayers } = this.state;
         return (
@@ -83,7 +100,7 @@ class App extends Component {
                         </Navbar>
                         <div className={pageBody}>
                             <div className={content}>
-                                <Table players={currentPlayers} />
+                                <Table players={currentPlayers} onGameEnd={this.onGameEnd} />
                             </div>
                             <div>
                                 <ScrollableView>
