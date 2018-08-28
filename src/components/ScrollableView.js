@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { css } from 'emotion';
 
 const ScrollableView = ({ children }) => {
@@ -27,5 +27,6 @@ const scrollingContainer = css`
     box-sizing: border-box;
     padding-right: 1em;
 `;
+
  
 export default ScrollableView;

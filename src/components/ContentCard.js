@@ -8,12 +8,29 @@ const ContentCard = styled('div')`
     margin: .5em 0em;
 `
 
-const ContentCardText = styled('div')`
+const ContentCardBody = styled('div')`
     width: 100%;
     padding: 1em 1em .5em 1em;
     box-sizing: border-box;
-    font-weight: 700;
 `
+
+const ContentCardTitle = styled('h1')`
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0em 0em .25em 0em;
+    .subtitle {
+        color: #aaa;
+        font-style: italic;
+        font-weight: 400;
+        font-size: .85rem;
+        margin-left: .5em;
+    }
+`;
+
+const ContentCardText = styled('p')`
+    font-size: .85rem;
+    margin: 0em;
+`;
 
 const ContentCardFooter = styled('div')`
     width: 100%;
@@ -43,6 +60,8 @@ const ContentCardAction = styled('button')`
 
 export {
     ContentCard,
+    ContentCardBody,
+    ContentCardTitle,
     ContentCardText,
     ContentCardFooter,
     ContentCardAction

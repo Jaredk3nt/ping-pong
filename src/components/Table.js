@@ -2,22 +2,35 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'react-emotion';
 // Components
+import Button from './Button';
 // Utis / Variables
 import { TeamPropType } from '../propTypes';
 
 const Table = ({ players, onGameEnd }) => {
     return (
-        <React.Fragment>
+        <CenterFlexFiller direction='column'>
             <CenterFlex>
-                <TablePlayers players={players.left}/>
+                <TablePlayers players={players.left} side='left' />
                 <PingPongTable />
-                <TablePlayers players={players.right}/>
+                <TablePlayers players={players.right} side='right' />
             </CenterFlex>
-            <CenterFlex>
-                <button onClick={() => onGameEnd('left')}>Team 1</button>
-                <button onClick={() => onGameEnd('right')}>Team 2</button>
+            <CenterFlex padding='1em 0em'>
+                <Button 
+                    primary 
+                    margin='0em 2em'
+                    onClick={() => onGameEnd('left')}
+                >
+                    Team 1 Win
+                </Button>
+                <Button 
+                    primary 
+                    margin='0em 2em'
+                    onClick={() => onGameEnd('right')}
+                >
+                    Team 2 Win
+                </Button>
             </CenterFlex>
-        </React.Fragment>
+        </CenterFlexFiller>
     )
 }
 // Table props for the players
@@ -32,6 +45,12 @@ const CenterFlex = styled('div')`
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: ${props => props.direction || 'row'};
+    padding: ${props => props.padding || '0em'};
+`;
+const CenterFlexFiller = styled(CenterFlex)`
+    height: 100%;
+    width: 100%;
 `;
 const PingPongTable = styled('div')`
     position: relative;
@@ -41,10 +60,11 @@ const PingPongTable = styled('div')`
     border: 4px solid white;
     outline: 2px solid ${props => props.theme.primary};
     box-sizing: border-box;
+    box-shadow: 0px 0px 20px rgba(0,0,0,.3);
     &:after {
         content: " ";
         height: 100%;
-        border: 2px solid black;
+        border: 2px solid ${props => props.theme.primary === '#000' ? '#333' : 'black'};
         position: absolute;
         top: 0;
         left: 50%;
@@ -60,10 +80,10 @@ const PingPongTable = styled('div')`
         box-sizing: border-box;
     }
 `;
-const TablePlayers = ({ players }) => (
+const TablePlayers = ({ players, side }) => (
     <TablePlayersContainer>
-        <TablePlayer>{players.player1.name}</TablePlayer>
-        <TablePlayer>{players.player2.name}</TablePlayer>
+        <TablePlayer side={side}>{players.player1.name}</TablePlayer>
+        <TablePlayer side={side}>{players.player2.name}</TablePlayer>
     </TablePlayersContainer>
 );
 const TablePlayersContainer = styled('div')`
@@ -72,14 +92,28 @@ const TablePlayersContainer = styled('div')`
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    padding: 0em 2em;
 `;
 const TablePlayer = styled('div')`
     width: 100%;
-    min-width: 6em;
+    min-width: 10em;
     text-align: center;
     font-weight: 700;
     font-size: 1.25rem;
+    position: relative;
+    text-shadow: 
+        -4px -4px 0 white,
+        4px -4px 0 white,
+        -4px 4px 0 white,
+        4px 4px 0 white; 
+    &:after {
+        content: " ";
+        position: absolute;
+        width: 50%;
+        ${props => props.side === 'left' ? 'right: 0' : 'left: 0'};
+        top: 50%;
+        border: 1px solid #ccc;
+        z-index: -1;
+    }
 `
 
 export default Table;
