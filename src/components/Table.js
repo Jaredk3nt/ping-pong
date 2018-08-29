@@ -82,8 +82,8 @@ const PingPongTable = styled('div')`
 `;
 const TablePlayers = ({ players, side }) => (
     <TablePlayersContainer>
-        <TablePlayer side={side}>{players.player1.name}</TablePlayer>
-        <TablePlayer side={side}>{players.player2.name}</TablePlayer>
+        <TablePlayer side={side}>{players.player1}</TablePlayer>
+        <TablePlayer side={side}>{players.player2}</TablePlayer>
     </TablePlayersContainer>
 );
 const TablePlayersContainer = styled('div')`

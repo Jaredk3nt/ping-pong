@@ -15,6 +15,8 @@ import {
 } from './components/ContentCard';
 import Navbar from './components/Navbar';
 import Table from './components/Table';
+import Leaderboard from './components/Leaderboard';
+import Button from './components/Button';
 // Variables
 import { theme, colors } from './theme.js';
 
@@ -23,25 +25,18 @@ class App extends Component {
         super(props);
 
         this.state = {
-            playerList: [
-                { name: 'Jared', id: 0, games: 0, wins: 0, hold: false },
-                { name: 'Adrian', id: 1, games: 0, wins: 0, hold: false },
-                { name: 'Stephanie', id: 6, games: 0, wins: 0, hold: false },
-            ],
-            currentPlayers: {
-                left: {
-                    player1: { name: 'Nathan', id: 2, games: 0, wins: 0, hold: false },
-                    player2: { name: 'JD', id: 3, games: 0, wins: 0, hold: false },
-                },
-                right: {
-                    player1: { name: 'Jonathan', id: 4, games: 0, wins: 0, hold: false },
-                    player2: { name: 'Kyle', id: 5, games: 0, wins: 0, hold: false },
-                },
+            players: {
+                Jared : { name: 'Jared', id: 0, games: 0, wins: 0, hold: false },
+                Adrian:  { name: 'Adrian', id: 1, games: 0, wins: 0, hold: false },
+                Stephanie:  { name: 'Stephanie', id: 6, games: 0, wins: 0, hold: false },
+                Nathan: { name: 'Nathan', id: 2, games: 0, wins: 0, hold: false },
+                JD: { name: 'JD', id: 3, games: 0, wins: 0, hold: false },
+                Jonathan: { name: 'Jonathan', id: 4, games: 0, wins: 0, hold: false },
+                Kyle: { name: 'Kyle', id: 5, games: 0, wins: 0, hold: false },
             },
-            theming: {
-                theme,
-                currentColor: 0,
-            },
+            playerList: [ 'Jared', 'Adrian', 'Stephanie', 'Nathan', 'JD', 'Jonathan', 'Kyle'],
+            currentPlayers: { left: { }, right: { } },
+            theming: { theme, currentColor: 0, },
         }
     }
 
@@ -57,102 +52,117 @@ class App extends Component {
         });
     }
 
-    playerLeave = (player) => {
+    playerLeave = (playerName) => {
         const { playerList } = this.state;
         this.setState({
-            playerList: playerList.filter(p => p.id !== player.id),
+            playerList: playerList.filter(p => p !== playerName),
         })
     }
 
-    playerHold = (player) => {
-        const { playerList } = this.state;
-        playerList.forEach(p => {
-            if (p.id === player.id) {
-                p.hold = !p.hold;
-            }
-        });
-        this.setState({ playerList });
+    playerHold = (playerName) => {
+        const { players } = this.state;
+        players[playerName].hold = !players[playerName].hold;
+        this.setState({ players });
     }
 
     onGameEnd = (winningSide) => {
-        let { currentPlayers, playerList } = this.state;
+        let { players, currentPlayers, playerList } = this.state;
         let winners = currentPlayers[winningSide];
         let losers = currentPlayers[winningSide === 'left' ? 'right' : 'left'];
         // Update stats
-        winners.player1.wins++;
-        winners.player2.wins++;
-        winners.player1.games++;
-        winners.player2.games++;
-        losers.player1.games++;
-        losers.player2.games++;
+        players[winners.player1].wins++;
+        players[winners.player2].wins++;
+        players[winners.player1].games++;
+        players[winners.player2].games++;
+        players[losers.player1].games++;
+        players[losers.player2].games++;
         // Add losers back to the playerList
         playerList = [...playerList, losers.player1, losers.player2 ];
-        // Move winners
+        // Assign new teams
         currentPlayers = { 
-            left: { player1: winners.player1, player2: {} }, 
-            right: { player1: winners.player2, player2: {} } 
+            left: { player1: winners.player1, player2: this.findNextPlayer(winners.player1) }, 
+            right: { player1: winners.player2, player2: this.findNextPlayer(winners.player2) } 
         };
-        // Assign new players
-        /* Make this reusable or better geezus */
-        for (let i in playerList) {
-            let player = playerList[i];
-            if (!player.hold) {
-                currentPlayers.left.player2 = playerList.splice(i, 1)[0];
-                break;
-            } else {
-                playerList.push(playerList.splice(i, 1)[0]);
-            }
-        }
-        for (let i in playerList) {
-            let player = playerList[i];
-            if (!player.hold) {
-                currentPlayers.right.player2 = playerList.splice(i, 1)[0];
-                break;
-            } else {
-                playerList.push(playerList.splice(i, 1)[0]);
-            }
-        }
         this.setState({
+            players,
             playerList,
             currentPlayers
         });
     }
 
+    findNextPlayer = (teammate) => {
+        // Use teammate to pick the upcoming player with the furthest play history with teammate
+        const { players, playerList } = this.state;
+        for(let i in playerList) {
+            let playerInfo = players[playerList[i]];
+            if (!playerInfo.hold) {
+                return playerList.splice(i, 1)[0];
+            } else {
+                playerList.push(playerList.splice(i, 1)[0]);
+            }
+        }
+    }
+
+    startGame = () => {
+        const p1 = this.findNextPlayer(),
+            p2 = this.findNextPlayer(),
+            p3 = this.findNextPlayer(),
+            p4 = this.findNextPlayer();
+        this.setState({
+            currentPlayers: {
+                left: { player1: p1, player2: p3 },
+                right: { player1: p2, player2: p4 }
+            }
+        });
+    }
+
+    playerInfoList = () => {
+        return Object.entries(this.state.players).map(([key, value]) => value)
+    }
+
     render() {
-        const { playerList, theming: { theme }, currentPlayers } = this.state;
+        const { players, playerList, theming: { theme }, currentPlayers } = this.state;
         return (
             <React.Fragment>
                 <ThemeProvider theme={theme}>
                     <React.Fragment>
                         <Navbar>
                             <strong>CDK Table Tennis Doubles</strong>
-                            <button onClick={this.changeColor}>Change Color</button>
+                            <Button small onClick={this.changeColor}>Change Color</Button>
                         </Navbar>
                         <div className={pageBody}>
+                            <Leaderboard playerList={this.playerInfoList()} />
                             <div className={content}>
                                 <Table players={currentPlayers} onGameEnd={this.onGameEnd} />
                             </div>
                             <div>
                                 <ScrollableView>
+                                    <Button 
+                                        onClick={this.startGame}
+                                        margin='0em 1em 0em 0em'
+                                    >
+                                        Start Game
+                                    </Button>
+                                    <Button>Add Player</Button>
                                     {
-                                        playerList.map((player) => (
-                                            <SlideIn key={player.id}>
+                                        playerList.map((p) => (
+                                            <SlideIn key={players[p].id}>
                                                 <ContentCard>
                                                     <ContentCardBody>
                                                         <ContentCardTitle>
-                                                            {player.name}
-                                                            {player.hold && <span className='subtitle'>Sitting Out</span>}
+                                                            {p}
+                                                            {players[p].hold && <span className='subtitle'>Sitting Out</span>}
                                                         </ContentCardTitle>
-                                                        <ContentCardText>{`${player.wins}/${player.games}`}</ContentCardText>
+                                                        <ContentCardText>{`${players[p].wins}/${players[p].games}`}</ContentCardText>
                                                     </ContentCardBody>
                                                     <ContentCardFooter>
                                                         <ContentCardAction
-                                                            onClick={() => this.playerHold(player)}
+                                                            onClick={() => this.playerHold(p)}
                                                         >
-                                                            { player.hold ? 'Rejoin' : 'Sit out' }
+                                                            { players[p].hold ? 'Rejoin' : 'Sit out' }
                                                         </ContentCardAction>
                                                         <ContentCardAction 
-                                                            onClick={() => this.playerLeave(player)}
+                                                            onClick={() => this.playerLeave(p)}
                                                         >
                                                             Leave game
                                                         </ContentCardAction>
@@ -178,7 +188,7 @@ const pageBody = css`
     max-height: 100vh;
     padding-top: ${theme.navHeight};
     display: grid;
-    grid-template-columns: 1fr 20%;
+    grid-template-columns: 15% 1fr 20%;
     box-sizing: border-box;
     overflow: hidden;
 `;

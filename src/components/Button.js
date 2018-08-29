@@ -1,11 +1,10 @@
-import React from 'react';
 import styled from 'react-emotion';
 
 const Button = styled('button')`
     padding: .5em 1em;
     border: none;
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: ${props => props.small ? '.8rem' : '1rem'};
     margin: ${props => props.margin || '0px'};
     &:hover {
         cursor: pointer;
