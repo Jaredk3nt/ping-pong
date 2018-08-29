@@ -88,8 +88,8 @@ class App extends Component {
                 playerList,
                 currentPlayers
             };
-        })
-        this.findNextPlayer('left', 'player2'),
+        });
+        this.findNextPlayer('left', 'player2');
         this.findNextPlayer('right', 'player2');
     }
 
@@ -110,14 +110,36 @@ class App extends Component {
     }
 
     startGame = () => {
-        this.findNextPlayer('left', 'player1'),
-        this.findNextPlayer('right', 'player1'),
-        this.findNextPlayer('left', 'player2'),
+        this.findNextPlayer('left', 'player1');
+        this.findNextPlayer('right', 'player1');
+        this.findNextPlayer('left', 'player2');
         this.findNextPlayer('right', 'player2');
+    }
+
+    endGame = () => {
+        const { currentPlayers, playerList } = this.state;
+        this.setState({
+            playerList: [
+                ...playerList,
+                currentPlayers.left.player1,
+                currentPlayers.left.player2,
+                currentPlayers.right.player1,
+                currentPlayers.right.player2,
+            ],
+            currentPlayers: { left: { }, right: { } }
+        })
     }
 
     playerInfoList = () => {
         return Object.entries(this.state.players).map(([key, value]) => value)
+    }
+
+    gameInSession = () => {
+        const { currentPlayers } = this.state;
+        return currentPlayers.left.player1 &&
+            currentPlayers.left.player2 &&
+            currentPlayers.right.player1 &&
+            currentPlayers.right.player2 
     }
 
     render() {
@@ -136,14 +158,26 @@ class App extends Component {
                                 <Table players={currentPlayers} onGameEnd={this.onGameEnd} />
                             </div>
                             <div>
-                                <ScrollableView>
-                                    <Button 
-                                        onClick={this.startGame}
-                                        margin='0em 1em 0em 0em'
-                                    >
-                                        Start Game
-                                    </Button>
+                                <ActionArea>
+                                    {
+                                        this.gameInSession() ?
+                                        <Button 
+                                            onClick={this.endGame}
+                                            margin='0em 1em 0em 0em'
+                                        >
+                                            End Game
+                                        </Button>
+                                        :
+                                        <Button 
+                                            onClick={this.startGame}
+                                            margin='0em 1em 0em 0em'
+                                        >
+                                            Start Game
+                                        </Button>
+                                    }
                                     <Button>Add Player</Button>
+                                </ActionArea>
+                                <ScrollableView>
                                     {
                                         playerList.map((p) => (
                                             <SlideIn key={players[p].id}>
@@ -196,9 +230,13 @@ const content = css`
     width: 100%;
     height: 100%;
 `;
-const slideInAnim = keyframes`${slideInRight}`
+const slideInAnim = keyframes`${slideInRight}`;
 const SlideIn = styled('div')`
     animation: .5s ${slideInAnim};
+`;
+const ActionArea = styled('div')`
+    padding: .5em;
+    background-color: #efefef;
 `
 
 export default App;
