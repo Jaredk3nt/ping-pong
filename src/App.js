@@ -66,58 +66,80 @@ class App extends Component {
     }
 
     onGameEnd = (winningSide) => {
-        let { players, currentPlayers, playerList } = this.state;
-        let winners = currentPlayers[winningSide];
-        let losers = currentPlayers[winningSide === 'left' ? 'right' : 'left'];
-        // Update stats
-        players[winners.player1].wins++;
-        players[winners.player2].wins++;
-        players[winners.player1].games++;
-        players[winners.player2].games++;
-        players[losers.player1].games++;
-        players[losers.player2].games++;
-        // Add losers back to the playerList
-        playerList = [...playerList, losers.player1, losers.player2 ];
-        // Assign new teams
-        currentPlayers = { 
-            left: { player1: winners.player1, player2: this.findNextPlayer(winners.player1) }, 
-            right: { player1: winners.player2, player2: this.findNextPlayer(winners.player2) } 
-        };
-        this.setState({
-            players,
-            playerList,
-            currentPlayers
+        this.setState((prevState) => {
+            let { players, currentPlayers, playerList } = prevState;
+            let winners = currentPlayers[winningSide];
+            let losers = currentPlayers[winningSide === 'left' ? 'right' : 'left'];
+            // Update stats
+            players[winners.player1].wins++;
+            players[winners.player2].wins++;
+            players[winners.player1].games++;
+            players[winners.player2].games++;
+            players[losers.player1].games++;
+            players[losers.player2].games++;
+            // Add losers back to the playerList
+            playerList = [...playerList, losers.player1, losers.player2 ];
+            // Assign new teams
+            
+            currentPlayers.left.player1 = winners.player1;
+            currentPlayers.right.player1 = winners.player2;
+            return {
+                players,
+                playerList,
+                currentPlayers
+            };
         });
+        this.findNextPlayer('left', 'player2');
+        this.findNextPlayer('right', 'player2');
     }
 
-    findNextPlayer = (teammate) => {
-        // Use teammate to pick the upcoming player with the furthest play history with teammate
-        const { players, playerList } = this.state;
-        for(let i in playerList) {
-            let playerInfo = players[playerList[i]];
-            if (!playerInfo.hold) {
-                return playerList.splice(i, 1)[0];
-            } else {
-                playerList.push(playerList.splice(i, 1)[0]);
+    findNextPlayer = (side, position) => {
+        this.setState((prevState) => {
+            const { players, playerList, currentPlayers } = prevState;
+            for(let i in playerList) {
+                let playerInfo = players[playerList[i]];
+                if (!playerInfo.hold) {
+                    currentPlayers[side][position] = playerList.splice(i, 1)[0];
+                    break;
+                } else {
+                    playerList.push(playerList.splice(i, 1)[0]);
+                }
             }
-        }
+            return { currentPlayers, playerList }
+        });
     }
 
     startGame = () => {
-        const p1 = this.findNextPlayer(),
-            p2 = this.findNextPlayer(),
-            p3 = this.findNextPlayer(),
-            p4 = this.findNextPlayer();
+        this.findNextPlayer('left', 'player1');
+        this.findNextPlayer('right', 'player1');
+        this.findNextPlayer('left', 'player2');
+        this.findNextPlayer('right', 'player2');
+    }
+
+    endGame = () => {
+        const { currentPlayers, playerList } = this.state;
         this.setState({
-            currentPlayers: {
-                left: { player1: p1, player2: p3 },
-                right: { player1: p2, player2: p4 }
-            }
-        });
+            playerList: [
+                ...playerList,
+                currentPlayers.left.player1,
+                currentPlayers.left.player2,
+                currentPlayers.right.player1,
+                currentPlayers.right.player2,
+            ],
+            currentPlayers: { left: { }, right: { } }
+        })
     }
 
     playerInfoList = () => {
         return Object.entries(this.state.players).map(([key, value]) => value)
+    }
+
+    gameInSession = () => {
+        const { currentPlayers } = this.state;
+        return currentPlayers.left.player1 &&
+            currentPlayers.left.player2 &&
+            currentPlayers.right.player1 &&
+            currentPlayers.right.player2 
     }
 
     render() {
@@ -136,14 +158,26 @@ class App extends Component {
                                 <Table players={currentPlayers} onGameEnd={this.onGameEnd} />
                             </div>
                             <div>
-                                <ScrollableView>
-                                    <Button 
-                                        onClick={this.startGame}
-                                        margin='0em 1em 0em 0em'
-                                    >
-                                        Start Game
-                                    </Button>
+                                <ActionArea>
+                                    {
+                                        this.gameInSession() ?
+                                        <Button 
+                                            onClick={this.endGame}
+                                            margin='0em 1em 0em 0em'
+                                        >
+                                            End Game
+                                        </Button>
+                                        :
+                                        <Button 
+                                            onClick={this.startGame}
+                                            margin='0em 1em 0em 0em'
+                                        >
+                                            Start Game
+                                        </Button>
+                                    }
                                     <Button>Add Player</Button>
+                                </ActionArea>
+                                <ScrollableView>
                                     {
                                         playerList.map((p) => (
                                             <SlideIn key={players[p].id}>
@@ -196,9 +230,13 @@ const content = css`
     width: 100%;
     height: 100%;
 `;
-const slideInAnim = keyframes`${slideInRight}`
+const slideInAnim = keyframes`${slideInRight}`;
 const SlideIn = styled('div')`
     animation: .5s ${slideInAnim};
+`;
+const ActionArea = styled('div')`
+    padding: .5em;
+    background-color: #efefef;
 `
 
 export default App;
