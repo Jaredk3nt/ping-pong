@@ -79,24 +79,48 @@ class App extends Component {
         // Add losers back to the playerList
         playerList = [...playerList, losers.player1, losers.player2 ];
         // Assign new teams
+        this.findNextPlayer('left', 'player2'),
+        this.findNextPlayer('right', 'player2');
         currentPlayers = { 
-            left: { player1: winners.player1, player2: this.findNextPlayer(winners.player1) }, 
-            right: { player1: winners.player2, player2: this.findNextPlayer(winners.player2) } 
+            left: { player1: winners.player1, player2: p1 }, 
+            right: { player1: winners.player2, player2: p2 } 
         };
         this.setState({
             players,
-            playerList,
+            playerList: playerListUpdated2,
             currentPlayers
         });
     }
 
-    findNextPlayer = (teammate) => {
+    findNextPlayer2 = (playerList, teammate) => {
+        console.log(playerList);
         // Use teammate to pick the upcoming player with the furthest play history with teammate
-        const { players, playerList } = this.state;
+        const { players } = this.state;
+        let nextPlayer;
         for(let i in playerList) {
             let playerInfo = players[playerList[i]];
             if (!playerInfo.hold) {
-                return playerList.splice(i, 1)[0];
+                nextPlayer = playerList.splice(i, 1)[0];
+                break;
+            } else {
+                playerList.push(playerList.splice(i, 1)[0]);
+            }
+        }
+        console.log(playerList);
+        return { nextPlayer, playerList };
+    }
+
+    findNextPlayer = (side, position) => {
+        this.setState((prevState) => {
+            
+        })
+        const { players, playerList, currentPlayers } = this.state;
+        let nextPlayer;
+        for(let i in playerList) {
+            let playerInfo = players[playerList[i]];
+            if (!playerInfo.hold) {
+                nextPlayer = playerList.splice(i, 1)[0];
+                break;
             } else {
                 playerList.push(playerList.splice(i, 1)[0]);
             }
@@ -104,15 +128,20 @@ class App extends Component {
     }
 
     startGame = () => {
-        const p1 = this.findNextPlayer(),
-            p2 = this.findNextPlayer(),
-            p3 = this.findNextPlayer(),
-            p4 = this.findNextPlayer();
+        const { playerList } = this.state; 
+        let { nextPlayer: p1, playerList: playerListUpdated } = this.findNextPlayer(playerList),
+            { nextPlayer: p2, playerList: playerListUpdated2 } = this.findNextPlayer(playerListUpdated),
+            { nextPlayer: p3, playerList: playerListUpdated3 } = this.findNextPlayer(playerListUpdated2),
+            { nextPlayer: p4, playerList: playerListUpdated4 } = this.findNextPlayer(playerListUpdated3);
+        console.log(`${p1} ${p2} ${p3} ${p4}`)
         this.setState({
             currentPlayers: {
                 left: { player1: p1, player2: p3 },
                 right: { player1: p2, player2: p4 }
-            }
+            },
+            playerList: playerListUpdated4
+        }, () => {
+            console.log(this.state.currentPlayers);
         });
     }
 
