@@ -26,6 +26,9 @@ const Button = styled('button')`
             }
         `
     }
+    ${props => props.transparent ?
+        ` background-color: #00000000;` : ''
+    }
 `
 
 export default Button;

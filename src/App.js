@@ -37,7 +37,25 @@ class App extends Component {
             playerList: [ 'Jared', 'Adrian', 'Stephanie', 'Nathan', 'JD', 'Jonathan', 'Kyle'],
             currentPlayers: { left: { }, right: { } },
             theming: { theme, currentColor: 0, },
+            boardClear: false
         }
+    }
+
+    componentDidUpdate(prevState) {
+        const { currentPlayers, boardClear } = this.state;
+        const { currentPlayers: prevPlayers} = prevState;
+        if (currentPlayers !== prevPlayers && !boardClear) {
+            this.fillTable();
+        }
+    }
+
+    fillTable = () => {
+        console.log('filling');
+        const { currentPlayers, currentPlayers: { left, right } } = this.state;
+        if (!left.player1) this.findNextPlayer('left', 'player1');
+        if (!right.player1) this.findNextPlayer('right', 'player1');
+        if (!left.player2) this.findNextPlayer('left', 'player2');
+        if (!right.player2) this.findNextPlayer('right', 'player2');
     }
 
     changeColor = () => {
@@ -56,7 +74,7 @@ class App extends Component {
         const { playerList } = this.state;
         this.setState({
             playerList: playerList.filter(p => p !== playerName),
-        })
+        });
     }
 
     playerHold = (playerName) => {
@@ -65,32 +83,47 @@ class App extends Component {
         this.setState({ players });
     }
 
-    onGameEnd = (winningSide) => {
+    playerLeaveGame = (side, position) => {
+        console.log(this.state.currentPlayers[side][position]);
         this.setState((prevState) => {
-            let { players, currentPlayers, playerList } = prevState;
-            let winners = currentPlayers[winningSide];
-            let losers = currentPlayers[winningSide === 'left' ? 'right' : 'left'];
-            // Update stats
-            players[winners.player1].wins++;
-            players[winners.player2].wins++;
-            players[winners.player1].games++;
-            players[winners.player2].games++;
-            players[losers.player1].games++;
-            players[losers.player2].games++;
-            // Add losers back to the playerList
-            playerList = [...playerList, losers.player1, losers.player2 ];
-            // Assign new teams
-            
-            currentPlayers.left.player1 = winners.player1;
-            currentPlayers.right.player1 = winners.player2;
+            const { currentPlayers, playerList } = prevState;
+            let player = currentPlayers[side][position];
+            currentPlayers[side][position] = undefined;
             return {
-                players,
-                playerList,
-                currentPlayers
-            };
-        });
-        this.findNextPlayer('left', 'player2');
-        this.findNextPlayer('right', 'player2');
+                currentPlayers,
+                playerList: [...playerList, player]
+            }
+        })
+
+    }
+
+    onGameEnd = (winningSide) => {
+        if (this.gameInSession()) {
+            this.setState((prevState) => {
+                let { players, currentPlayers, playerList } = prevState;
+                let winners = currentPlayers[winningSide];
+                let losers = currentPlayers[winningSide === 'left' ? 'right' : 'left'];
+                // Update stats
+                players[winners.player1].wins++;
+                players[winners.player2].wins++;
+                players[winners.player1].games++;
+                players[winners.player2].games++;
+                players[losers.player1].games++;
+                players[losers.player2].games++;
+                // Add losers back to the playerList
+                playerList = [...playerList, losers.player1, losers.player2 ];
+                // Assign new teams
+                currentPlayers.left.player1 = winners.player1;
+                currentPlayers.right.player1 = winners.player2;
+                currentPlayers.left.player2 = undefined;
+                currentPlayers.right.player2 = undefined;
+                return {
+                    players,
+                    playerList,
+                    currentPlayers
+                };
+            });
+        }
     }
 
     findNextPlayer = (side, position) => {
@@ -101,8 +134,6 @@ class App extends Component {
                 if (!playerInfo.hold) {
                     currentPlayers[side][position] = playerList.splice(i, 1)[0];
                     break;
-                } else {
-                    playerList.push(playerList.splice(i, 1)[0]);
                 }
             }
             return { currentPlayers, playerList }
@@ -110,10 +141,8 @@ class App extends Component {
     }
 
     startGame = () => {
-        this.findNextPlayer('left', 'player1');
-        this.findNextPlayer('right', 'player1');
-        this.findNextPlayer('left', 'player2');
-        this.findNextPlayer('right', 'player2');
+        this.setState(() => ({ boardClear: false}));
+        this.fillTable();
     }
 
     endGame = () => {
@@ -126,7 +155,8 @@ class App extends Component {
                 currentPlayers.right.player1,
                 currentPlayers.right.player2,
             ],
-            currentPlayers: { left: { }, right: { } }
+            currentPlayers: { left: { }, right: { } },
+            boardClear: true
         })
     }
 
@@ -155,7 +185,7 @@ class App extends Component {
                         <div className={pageBody}>
                             <Leaderboard playerList={this.playerInfoList()} />
                             <div className={content}>
-                                <Table players={currentPlayers} onGameEnd={this.onGameEnd} />
+                                <Table players={currentPlayers} onGameEnd={this.onGameEnd} leave={this.playerLeaveGame} />
                             </div>
                             <div>
                                 <ActionArea>

@@ -6,13 +6,13 @@ import Button from './Button';
 // Utis / Variables
 import { TeamPropType } from '../propTypes';
 
-const Table = ({ players, onGameEnd }) => {
+const Table = ({ players, onGameEnd, leave }) => {
     return (
         <CenterFlexFiller direction='column'>
             <CenterFlex>
-                <TablePlayers players={players.left} side='left' />
+                <TablePlayers players={players.left} side='left' leave={leave} />
                 <PingPongTable />
-                <TablePlayers players={players.right} side='right' />
+                <TablePlayers players={players.right} side='right' leave={leave} />
             </CenterFlex>
             <CenterFlex padding='1em 0em'>
                 <Button 
@@ -80,10 +80,28 @@ const PingPongTable = styled('div')`
         box-sizing: border-box;
     }
 `;
-const TablePlayers = ({ players, side }) => (
+const TablePlayers = ({ players, side, leave }) => (
     <TablePlayersContainer>
-        <TablePlayer side={side}>{players.player1}</TablePlayer>
-        <TablePlayer side={side}>{players.player2}</TablePlayer>
+        <TablePlayer side={side}>
+            {
+                players.player1 && (
+                    <React.Fragment>
+                        {players.player1}
+                        <HoverButton small primary onClick={() => leave(side, 'player1')}>Leave Game</HoverButton>
+                    </React.Fragment>
+                )
+            }
+        </TablePlayer>
+        <TablePlayer side={side}>
+            {
+                players.player2 && (
+                    <React.Fragment>
+                        {players.player2}
+                        <HoverButton small primary onClick={() => leave(side, 'player2')}>Leave Game</HoverButton>
+                    </React.Fragment>
+                )
+            }
+        </TablePlayer>
     </TablePlayersContainer>
 );
 const TablePlayersContainer = styled('div')`
@@ -113,6 +131,15 @@ const TablePlayer = styled('div')`
         top: 50%;
         border: 1px solid #ccc;
         z-index: -1;
+    }
+`
+const HoverButton = styled(Button)`
+    position: absolute;
+    top: 0;
+    left: 25%;
+    opacity: 0;
+    &:hover {
+        opacity: 1;
     }
 `
 
