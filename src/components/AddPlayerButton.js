@@ -1,25 +1,7 @@
 import React, { Component } from "react";
-import { ContentCardAction } from "./ContentCard";
+import Button from './Button';
 
-class AddPlayerButton extends Component {
-    constructor(props) {
-        super(props);
-
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleSubmit(event) {
-        this.props.addingPlayer(true);
-        event.preventDefault();
-    }
-
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <ContentCardAction>Add Player</ContentCardAction>
-            </form>
-        );
-    }
-}
+const AddPlayerButton = ({buttonText, onClick}) => 
+    <Button onClick={onClick}>{buttonText}</Button>;
 
 export default AddPlayerButton;

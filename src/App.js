@@ -19,9 +19,10 @@ import Leaderboard from './components/Leaderboard';
 import Button from './components/Button';
 // Variables
 import { theme, colors } from './theme.js';
+import AddPlayer from './components/AddPlayer';
 
 class App extends Component {
-    id;
+
     constructor(props) {
         super(props);
 
@@ -173,6 +174,23 @@ class App extends Component {
             currentPlayers.right.player2 
     }
 
+    addPlayerToList = (name) => {
+        let newPlayerList = this.state.playerList;
+        let newPlayer = {};
+        newPlayer[name] = {
+                name: name,
+                id: 8,
+                games: 0,
+                wins: 0,
+                hold: false
+        };
+        this.setState({
+            players: {...this.state.players, ...newPlayer},
+            playerList: [name, ...newPlayerList]
+        });
+            // playerList: [name, ...newPlayerList]});
+    }
+
     render() {
         const { players, playerList, theming: { theme }, currentPlayers } = this.state;
         return (
@@ -206,9 +224,11 @@ class App extends Component {
                                             Start Game
                                         </Button>
                                     }
-                                    <Button>Add Player</Button>
+                                    <AddPlayer addPlayerToList={this.addPlayerToList} />
                                 </ActionArea>
                                 <ScrollableView>
+                                    { console.log(playerList) }
+                                    { console.log(players) }
                                     {
                                         playerList.map((p) => (
                                             <SlideIn key={players[p].id}>
