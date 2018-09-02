@@ -19,6 +19,7 @@ const boundingContainer = css`
     position: relative;
     box-sizing: border-box;
     padding: 0em 0em 0em .5em;
+    padding-bottom: 4em;
 `;
 const scrollingContainer = css`
     width: 100%;
@@ -26,6 +27,7 @@ const scrollingContainer = css`
     overflow-y: scroll;
     box-sizing: border-box;
     padding-right: 1em;
+    padding-bottom: 5em;
 `;
 
  

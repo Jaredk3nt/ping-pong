@@ -28,13 +28,14 @@ class App extends Component {
             players: {
                 Jared : { name: 'Jared', id: 0, games: 0, wins: 0, hold: false },
                 Adrian:  { name: 'Adrian', id: 1, games: 0, wins: 0, hold: false },
-                Stephanie:  { name: 'Stephanie', id: 6, games: 0, wins: 0, hold: false },
+                Stephanie:  { name: 'Stephanie', id: 7, games: 0, wins: 0, hold: false },
                 Nathan: { name: 'Nathan', id: 2, games: 0, wins: 0, hold: false },
                 JD: { name: 'JD', id: 3, games: 0, wins: 0, hold: false },
                 Jonathan: { name: 'Jonathan', id: 4, games: 0, wins: 0, hold: false },
                 Kyle: { name: 'Kyle', id: 5, games: 0, wins: 0, hold: false },
+                Kevin: { name: 'Kevin', id: 6, games: 0, wins: 0, hold: false },
             },
-            playerList: [ 'Jared', 'Adrian', 'Stephanie', 'Nathan', 'JD', 'Jonathan', 'Kyle'],
+            playerList: [ 'Jared', 'Adrian', 'Stephanie', 'Nathan', 'JD', 'Jonathan', 'Kyle', 'Kevin'],
             currentPlayers: { left: { }, right: { } },
             theming: { theme, currentColor: 0, },
             boardClear: false
