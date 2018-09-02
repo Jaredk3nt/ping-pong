@@ -20,6 +20,7 @@ import Button from './components/Button';
 // Variables
 import { theme, colors } from './theme.js';
 import AddPlayer from './components/AddPlayer';
+import { generateUUID } from './utils/idGenerator';
 
 class App extends Component {
 
@@ -27,33 +28,24 @@ class App extends Component {
         super(props);
 
         this.state = {
-            players: {
-                Jared : { name: 'Jared', id: 0, games: 0, wins: 0, hold: false },
-                Adrian:  { name: 'Adrian', id: 1, games: 0, wins: 0, hold: false },
-                Stephanie:  { name: 'Stephanie', id: 6, games: 0, wins: 0, hold: false },
-                Nathan: { name: 'Nathan', id: 2, games: 0, wins: 0, hold: false },
-                JD: { name: 'JD', id: 3, games: 0, wins: 0, hold: false },
-                Jonathan: { name: 'Jonathan', id: 4, games: 0, wins: 0, hold: false },
-                Kyle: { name: 'Kyle', id: 5, games: 0, wins: 0, hold: false },
-            },
-            playerList: [ 'Jared', 'Adrian', 'Stephanie', 'Nathan', 'JD', 'Jonathan', 'Kyle'],
+            players: {},
+            playerList: [],
             currentPlayers: { left: { }, right: { } },
             theming: { theme, currentColor: 0, },
-            boardClear: false
+            boardClear: true
         }
     }
 
-    componentDidUpdate(prevState) {
-        const { currentPlayers, boardClear } = this.state;
-        const { currentPlayers: prevPlayers} = prevState;
-        if (currentPlayers !== prevPlayers && !boardClear) {
+    componentDidUpdate(prevProps, prevState) {
+        const { boardClear, playerList } = this.state;
+        if (!this.gameInSession() && playerList.length && !boardClear) {
             this.fillTable();
         }
     }
 
     fillTable = () => {
-        console.log('filling');
-        const { currentPlayers, currentPlayers: { left, right } } = this.state;
+        const { currentPlayers: { left, right } } = this.state;
+        this.setState(() => ({ boardClear: true }));
         if (!left.player1) this.findNextPlayer('left', 'player1');
         if (!right.player1) this.findNextPlayer('right', 'player1');
         if (!left.player2) this.findNextPlayer('left', 'player2');
@@ -86,7 +78,6 @@ class App extends Component {
     }
 
     playerLeaveGame = (side, position) => {
-        console.log(this.state.currentPlayers[side][position]);
         this.setState((prevState) => {
             const { currentPlayers, playerList } = prevState;
             let player = currentPlayers[side][position];
@@ -122,7 +113,8 @@ class App extends Component {
                 return {
                     players,
                     playerList,
-                    currentPlayers
+                    currentPlayers,
+                    boardClear: false
                 };
             });
         }
@@ -163,7 +155,7 @@ class App extends Component {
     }
 
     playerInfoList = () => {
-        return Object.entries(this.state.players).map(([key, value]) => value)
+        return Object.values(this.state.players).map(value => value)
     }
 
     gameInSession = () => {
@@ -179,7 +171,7 @@ class App extends Component {
         let newPlayer = {};
         newPlayer[name] = {
                 name: name,
-                id: 8,
+                id: generateUUID(),
                 games: 0,
                 wins: 0,
                 hold: false
@@ -188,7 +180,6 @@ class App extends Component {
             players: {...this.state.players, ...newPlayer},
             playerList: [name, ...newPlayerList]
         });
-            // playerList: [name, ...newPlayerList]});
     }
 
     render() {
@@ -226,9 +217,8 @@ class App extends Component {
                                     }
                                     <AddPlayer addPlayerToList={this.addPlayerToList} />
                                 </ActionArea>
+                                
                                 <ScrollableView>
-                                    { console.log(playerList) }
-                                    { console.log(players) }
                                     {
                                         playerList.map((p) => (
                                             <SlideIn key={players[p].id}>
@@ -280,6 +270,7 @@ const pageBody = css`
 const content = css`
     width: 100%;
     height: 100%;
+    max-height: 100vh;
 `;
 const slideInAnim = keyframes`${slideInRight}`;
 const SlideIn = styled('div')`
