@@ -30,7 +30,7 @@ class AddPlayerForm extends Component {
                     <label>
                         Name:
                     </label>
-                    <Input type="text" ref="name" value={this.state.value} onChange={this.handleChange} />
+                    <Input autoFocus type="text" value={this.state.value} onChange={this.handleChange} />
                     <Button name="add" type="submit" value="Submit">Submit</Button>
                     <Button type="button" onClick={this.cancel}>Cancel</Button>
                 </Form>
