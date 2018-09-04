@@ -51,6 +51,7 @@ const CenterFlex = styled('div')`
 const CenterFlexFiller = styled(CenterFlex)`
     height: 100%;
     width: 100%;
+    vertical-align: top;
 `;
 const PingPongTable = styled('div')`
     position: relative;
