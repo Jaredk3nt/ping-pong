@@ -5,13 +5,13 @@ import styled, { keyframes } from 'react-emotion';
 import { slideInRight } from 'react-animations';
 // Components
 import ScrollableView from './components/ScrollableView';
-import { 
-    ContentCard, 
+import {
+    ContentCard,
     ContentCardBody,
     ContentCardTitle,
     ContentCardText,
-    ContentCardFooter, 
-    ContentCardAction 
+    ContentCardFooter,
+    ContentCardAction
 } from './components/ContentCard';
 import Navbar from './components/Navbar';
 import Table from './components/Table';
@@ -19,40 +19,33 @@ import Leaderboard from './components/Leaderboard';
 import Button from './components/Button';
 // Variables
 import { theme, colors } from './theme.js';
+import AddPlayer from './components/AddPlayer';
+import { generateUUID } from './utils/idGenerator';
 
 class App extends Component {
+
     constructor(props) {
         super(props);
 
         this.state = {
-            players: {
-                Jared : { name: 'Jared', id: 0, games: 0, wins: 0, hold: false },
-                Adrian:  { name: 'Adrian', id: 1, games: 0, wins: 0, hold: false },
-                Stephanie:  { name: 'Stephanie', id: 7, games: 0, wins: 0, hold: false },
-                Nathan: { name: 'Nathan', id: 2, games: 0, wins: 0, hold: false },
-                JD: { name: 'JD', id: 3, games: 0, wins: 0, hold: false },
-                Jonathan: { name: 'Jonathan', id: 4, games: 0, wins: 0, hold: false },
-                Kyle: { name: 'Kyle', id: 5, games: 0, wins: 0, hold: false },
-                Kevin: { name: 'Kevin', id: 6, games: 0, wins: 0, hold: false },
-            },
-            playerList: [ 'Jared', 'Adrian', 'Stephanie', 'Nathan', 'JD', 'Jonathan', 'Kyle', 'Kevin'],
-            currentPlayers: { left: { }, right: { } },
+            players: {},
+            playerList: [],
+            currentPlayers: { left: {}, right: {} },
             theming: { theme, currentColor: 0, },
-            boardClear: false
+            boardClear: true
         }
     }
 
-    componentDidUpdate(prevState) {
-        const { currentPlayers, boardClear } = this.state;
-        const { currentPlayers: prevPlayers} = prevState;
-        if (currentPlayers !== prevPlayers && !boardClear) {
+    componentDidUpdate(prevProps, prevState) {
+        const { boardClear, playerList } = this.state;
+        if (!this.gameInSession() && playerList.length && !boardClear) {
             this.fillTable();
         }
     }
 
     fillTable = () => {
-        console.log('filling');
-        const { currentPlayers, currentPlayers: { left, right } } = this.state;
+        const { currentPlayers: { left, right } } = this.state;
+        this.setState(() => ({ boardClear: true }));
         if (!left.player1) this.findNextPlayer('left', 'player1');
         if (!right.player1) this.findNextPlayer('right', 'player1');
         if (!left.player2) this.findNextPlayer('left', 'player2');
@@ -60,7 +53,7 @@ class App extends Component {
     }
 
     changeColor = () => {
-        const { theming: { theme, currentColor}, } = this.state;
+        const { theming: { theme, currentColor }, } = this.state;
         let newColor = (currentColor + 1) >= colors.length ? 0 : currentColor + 1;
         theme.primary = colors[newColor];
         this.setState({
@@ -85,7 +78,6 @@ class App extends Component {
     }
 
     playerLeaveGame = (side, position) => {
-        console.log(this.state.currentPlayers[side][position]);
         this.setState((prevState) => {
             const { currentPlayers, playerList } = prevState;
             let player = currentPlayers[side][position];
@@ -112,7 +104,7 @@ class App extends Component {
                 players[losers.player1].games++;
                 players[losers.player2].games++;
                 // Add losers back to the playerList
-                playerList = [...playerList, losers.player1, losers.player2 ];
+                playerList = [...playerList, losers.player1, losers.player2];
                 // Assign new teams
                 currentPlayers.left.player1 = winners.player1;
                 currentPlayers.right.player1 = winners.player2;
@@ -121,7 +113,8 @@ class App extends Component {
                 return {
                     players,
                     playerList,
-                    currentPlayers
+                    currentPlayers,
+                    boardClear: false
                 };
             });
         }
@@ -130,7 +123,7 @@ class App extends Component {
     findNextPlayer = (side, position) => {
         this.setState((prevState) => {
             const { players, playerList, currentPlayers } = prevState;
-            for(let i in playerList) {
+            for (let i in playerList) {
                 let playerInfo = players[playerList[i]];
                 if (!playerInfo.hold) {
                     currentPlayers[side][position] = playerList.splice(i, 1)[0];
@@ -142,7 +135,7 @@ class App extends Component {
     }
 
     startGame = () => {
-        this.setState(() => ({ boardClear: false}));
+        this.setState(() => ({ boardClear: false }));
         this.fillTable();
     }
 
@@ -156,13 +149,13 @@ class App extends Component {
                 currentPlayers.right.player1,
                 currentPlayers.right.player2,
             ],
-            currentPlayers: { left: { }, right: { } },
+            currentPlayers: { left: {}, right: {} },
             boardClear: true
         })
     }
 
     playerInfoList = () => {
-        return Object.entries(this.state.players).map(([key, value]) => value)
+        return Object.values(this.state.players).map(value => value)
     }
 
     gameInSession = () => {
@@ -170,7 +163,33 @@ class App extends Component {
         return currentPlayers.left.player1 &&
             currentPlayers.left.player2 &&
             currentPlayers.right.player1 &&
-            currentPlayers.right.player2 
+            currentPlayers.right.player2
+    }
+
+    addPlayerToList = (name) => {
+        let { playerList: newPlayerList, players } = this.state;
+        let newPlayer = {
+            [name]: {
+                name: name,
+                id: generateUUID(),
+                games: 0,
+                wins: 0,
+                hold: false
+            }
+        };
+        
+        const i = newPlayerList.findIndex(p => players[p].games > 0);
+
+        if (i >= 0) {
+            newPlayerList.splice(i, 0, name);
+        } else {
+            newPlayerList.push(name);
+        }
+
+        this.setState({
+            players: { ...players, ...newPlayer },
+            playerList: newPlayerList
+        });
     }
 
     render() {
@@ -192,22 +211,23 @@ class App extends Component {
                                 <ActionArea>
                                     {
                                         this.gameInSession() ?
-                                        <Button 
-                                            onClick={this.endGame}
-                                            margin='0em 1em 0em 0em'
-                                        >
-                                            End Game
+                                            <Button
+                                                onClick={this.endGame}
+                                                margin='0em 1em 0em 0em'
+                                            >
+                                                End Game
                                         </Button>
-                                        :
-                                        <Button 
-                                            onClick={this.startGame}
-                                            margin='0em 1em 0em 0em'
-                                        >
-                                            Start Game
+                                            :
+                                            <Button
+                                                onClick={this.startGame}
+                                                margin='0em 1em 0em 0em'
+                                            >
+                                                Start Game
                                         </Button>
                                     }
-                                    <Button>Add Player</Button>
+                                    <AddPlayer addPlayerToList={this.addPlayerToList} />
                                 </ActionArea>
+
                                 <ScrollableView>
                                     {
                                         playerList.map((p) => (
@@ -224,9 +244,9 @@ class App extends Component {
                                                         <ContentCardAction
                                                             onClick={() => this.playerHold(p)}
                                                         >
-                                                            { players[p].hold ? 'Rejoin' : 'Sit out' }
+                                                            {players[p].hold ? 'Rejoin' : 'Sit out'}
                                                         </ContentCardAction>
-                                                        <ContentCardAction 
+                                                        <ContentCardAction
                                                             onClick={() => this.playerLeave(p)}
                                                         >
                                                             Leave game
@@ -260,6 +280,7 @@ const pageBody = css`
 const content = css`
     width: 100%;
     height: 100%;
+    max-height: 100vh;
 `;
 const slideInAnim = keyframes`${slideInRight}`;
 const SlideIn = styled('div')`
