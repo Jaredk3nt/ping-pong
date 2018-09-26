@@ -29,11 +29,11 @@ class HttpHandler extends Component {
     }
 
     addNewPlayer = async (name) => {
-        const res = await this.withLoading(addPlayer, [name]);
+        await this.withLoading(addPlayer, [name]);
     }
 
     addGame = async (table, winningSide) => {
-        const res = await this.withLoading(addGame, [table, winningSide]);
+        await this.withLoading(addGame, [table, winningSide]);
     }
 
     render() { 
@@ -43,6 +43,8 @@ class HttpHandler extends Component {
                     React.Children.map(this.props.children, (child) =>
                         React.cloneElement(child, { 
                             ...this.state,
+                            addNewPlayer: this.addNewPlayer,
+                            addGame: this.addGame
                         })
                     )
                 }

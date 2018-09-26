@@ -3,6 +3,8 @@ import { ThemeProvider } from 'emotion-theming';
 // Components
 import HttpHandler from './HttpHandler';
 import PingPong from './PingPong';
+import Navbar from './components/Navbar';
+import Button from './components/Button';
 // Variables
 import { theme, colors } from './theme.js';
 
@@ -13,6 +15,7 @@ class App extends Component {
             currentColor: 0
         }
     }
+
     changeColor = () => {
         const { theming: { theme, currentColor }, } = this.state;
         let newColor = (currentColor + 1) >= colors.length ? 0 : currentColor + 1;
@@ -28,13 +31,17 @@ class App extends Component {
     render() {
         const { theming: { theme } } = this.state;
         return (
-            <React.Fragment>
-                <ThemeProvider theme={theme}>
+            <ThemeProvider theme={theme}>
+                <React.Fragment>
+                    <Navbar>
+                        <strong>CDK Table Tennis Doubles</strong>
+                        <Button small onClick={this.changeColor}>Change Color</Button>
+                    </Navbar>
                     <HttpHandler>
                         <PingPong />
                     </HttpHandler>
-                </ThemeProvider>
-            </React.Fragment>
+                </React.Fragment>
+            </ThemeProvider>
         );
     }
 }

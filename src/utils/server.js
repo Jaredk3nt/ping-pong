@@ -8,6 +8,7 @@ const getPlayers = async () => {
 }
 
 const addPlayer = async (name) => {
+    console.log(name);
     return await fetch(`${url}/players`, { 
         method: 'POST',
         body: { name }
@@ -15,6 +16,7 @@ const addPlayer = async (name) => {
 }
 
 const addGame = async (table, winningSide) => {
+    console.log(winningSide);
     return await fetch(`${url}/games`, {
         method: 'POST',
         body: { 

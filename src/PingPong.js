@@ -11,13 +11,11 @@ import {
     ContentCardFooter,
     ContentCardAction
 } from './components/ContentCard';
-import Navbar from './components/Navbar';
 import Table from './components/Table';
 import Leaderboard from './components/Leaderboard';
 import Button from './components/Button';
 import PlayerSelectModal from './components/Modal';
 // Variables
-import AddPlayer from './components/AddPlayer';
 
 class PingPong extends Component {
     constructor(props) {
@@ -153,12 +151,12 @@ class PingPong extends Component {
         let { playerList: newPlayerList, players } = this.state;
         const i = newPlayerList.findIndex(p => players[p].games > 0);
         if (i >= 0) {
-            newPlayerList.splice(i, 0, player.name);
+            newPlayerList.splice(i, 0, player.id);
         } else {
-            newPlayerList.push(player.name);
+            newPlayerList.push(player.id);
         }
         this.setState({
-            players: { ...players, [player.name]: player },
+            players: { ...players, [player.id]: player },
             playerList: newPlayerList,
             playerModalOpen: false
         });
@@ -167,6 +165,12 @@ class PingPong extends Component {
     openModal = () => {
         this.setState({
             playerModalOpen: true
+        })
+    }
+
+    closeModal = () => {
+        this.setState({
+            playerModalOpen: false
         })
     }
 
@@ -188,11 +192,8 @@ class PingPong extends Component {
                     visible={playerModalOpen}
                     players={propsPlayers}
                     addPlayer={this.addPlayerToList}
+                    close={this.closeModal}
                 />
-                <Navbar>
-                    <strong>CDK Table Tennis Doubles</strong>
-                    <Button small onClick={this.changeColor}>Change Color</Button>
-                </Navbar>
                 <PageBody>
                     <Leaderboard playerList={this.playerInfoList()} />
                     <Content>
@@ -225,24 +226,24 @@ class PingPong extends Component {
 
                         <ScrollableView>
                             {
-                                playerList.map((p) => (
-                                    <SlideIn key={players[p].id}>
+                                playerList.map((playerId) => (
+                                    <SlideIn key={playerId}>
                                         <ContentCard>
                                             <ContentCardBody>
                                                 <ContentCardTitle>
-                                                    {p}
-                                                    {players[p].hold && <span className='subtitle'>Sitting Out</span>}
+                                                    {players[playerId].name}
+                                                    {players[playerId].hold && <span className='subtitle'>Sitting Out</span>}
                                                 </ContentCardTitle>
-                                                <ContentCardText>{`${players[p].wins}/${players[p].games}`}</ContentCardText>
+                                                <ContentCardText>{`${players[playerId].wins}/${players[playerId].games}`}</ContentCardText>
                                             </ContentCardBody>
                                             <ContentCardFooter>
                                                 <ContentCardAction
-                                                    onClick={() => this.playerHold(p)}
+                                                    onClick={() => this.playerHold(playerId)}
                                                 >
-                                                    {players[p].hold ? 'Rejoin' : 'Sit out'}
+                                                    {players[playerId].hold ? 'Rejoin' : 'Sit out'}
                                                 </ContentCardAction>
                                                 <ContentCardAction
-                                                    onClick={() => this.playerLeave(p)}
+                                                    onClick={() => this.playerLeave(playerId)}
                                                 >
                                                     Leave game
                                                 </ContentCardAction>
