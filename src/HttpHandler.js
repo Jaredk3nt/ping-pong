@@ -16,9 +16,9 @@ class HttpHandler extends Component {
         await this.updatePlayerList();
     }
 
-    withLoading = async (fn, args =[]) => {
+    withLoading = async (fn, body = {}) => {
         this.setState(prevState => ({ isLoading: true }));
-        const res = await fn(...args);
+        const res = await fn(body);
         this.setState(prevState => ({ isLoading: false }));
         return res;
     }
@@ -29,11 +29,11 @@ class HttpHandler extends Component {
     }
 
     addNewPlayer = async (name) => {
-        await this.withLoading(addPlayer, [name]);
+        return await this.withLoading(addPlayer, {name});
     }
 
     addGame = async (table, winningSide) => {
-        await this.withLoading(addGame, [table, winningSide]);
+        await this.withLoading(addGame, {table, winningSide});
     }
 
     render() { 
@@ -43,6 +43,7 @@ class HttpHandler extends Component {
                     React.Children.map(this.props.children, (child) =>
                         React.cloneElement(child, { 
                             ...this.state,
+                            updatePlayerList: this.updatePlayerList,
                             addNewPlayer: this.addNewPlayer,
                             addGame: this.addGame
                         })

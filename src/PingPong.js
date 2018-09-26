@@ -71,8 +71,9 @@ class PingPong extends Component {
         })
     }
 
-    onGameEnd = (winningSide) => {
+    onGameEnd = async (winningSide) => {
         if (this.gameInSession()) {
+            await this.props.addGame(this.state.currentPlayers, winningSide);
             this.setState((prevState) => {
                 let { players, currentPlayers, playerList } = prevState;
                 let winners = currentPlayers[winningSide];
@@ -174,6 +175,12 @@ class PingPong extends Component {
         })
     }
 
+    createPlayer = async (name) => {
+        const player = await this.props.addNewPlayer(name);
+        this.addPlayerToList(player);
+        await this.props.updatePlayerList();
+    }
+
     render() { 
         const { 
             players, 
@@ -192,12 +199,18 @@ class PingPong extends Component {
                     visible={playerModalOpen}
                     players={propsPlayers}
                     addPlayer={this.addPlayerToList}
+                    createPlayer={this.createPlayer}
                     close={this.closeModal}
                 />
                 <PageBody>
                     <Leaderboard playerList={this.playerInfoList()} />
                     <Content>
-                        <Table players={currentPlayers} onGameEnd={this.onGameEnd} leave={this.playerLeaveGame} />
+                        <Table 
+                            players={currentPlayers} 
+                            onGameEnd={this.onGameEnd} 
+                            leave={this.playerLeaveGame} 
+                            playerObj={players}
+                        />
                     </Content>
                     <div>
                         <ActionArea>

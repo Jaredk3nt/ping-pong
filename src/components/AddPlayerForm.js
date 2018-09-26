@@ -15,24 +15,29 @@ class AddPlayerForm extends Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
-        this.props.addPlayerToList(this.state.value);
-        this.props.addingPlayer(false);
-    }
-
-    cancel = () => {
-        this.props.addingPlayer(false);
+        this.props.addPlayer(this.state.value);
     }
 
     render() {
+        const { primary } = this.props;
         return (
            <span>
                 <Form onSubmit={this.handleSubmit}>
-                    <label>
-                        Name:
-                    </label>
-                    <Input autoFocus type="text" value={this.state.value} onChange={this.handleChange} />
-                    <Button name="add" type="submit" value="Submit">Submit</Button>
-                    <Button type="button" onClick={this.cancel}>Cancel</Button>
+                    <Input 
+                        autoFocus 
+                        type="text" 
+                        value={this.state.value}
+                        onChange={this.handleChange} 
+                        placeholder='New player name'
+                    />
+                    <Button 
+                        name="add" 
+                        type="submit" 
+                        value="Submit"
+                        primary={primary}
+                    >
+                        Submit
+                    </Button>
                 </Form>
             </span>
         );
@@ -41,56 +46,30 @@ class AddPlayerForm extends Component {
 
 const Form = styled('form')`
     display: block;
-    margin: 2px;
-    padding: 5px;
+    margin: .5em 0em 0em;
+    height: 3em;
     width: 100%;
     font-size: 18px;
     border-radius: 4px;
     background: transparent;
     box-sizing: border-box;
-    ${props => props.primary ? 
-        `
-            background-color: ${props.theme.primary};
-            border: 1px transparent;
-            color: white;
-        ` 
-        : 
-        `
-            background-color: white;
-            border: 1px transparent;
-            color: ${props.theme.primary};
-        `
-    }
-    ${props => props.transparent ?
-        ` background-color: #00000000;` : ''
-    }
+    display: flex;
+    background-color: white;
+    border: 1px transparent;
+    color: white;
 `
 
 const Input = styled('input')`
     display: block;
-    margin: 2px;
-    padding: 5px;
+    margin-right: .5em;
+    padding: .5em;
     width: 100%;
     font-size: 18px;
     border-radius: 4px;
     background: transparent;
     box-sizing: border-box;
-    ${props => props.primary ? 
-        `
-            background-color: ${props.theme.primary};
-            border: 1px solid ${props.theme.primary};
-            color: white;
-        ` 
-        : 
-        `
-            background-color: white;
-            border: 1px solid ${props.theme.primary};
-            color: ${props.theme.primary};
-        `
-    }
-    ${props => props.transparent ?
-        ` background-color: #00000000;` : ''
-    }
+    background-color: #eee;
+    border: none;
 `
 
 export default AddPlayerForm;

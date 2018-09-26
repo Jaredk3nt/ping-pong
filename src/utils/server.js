@@ -7,23 +7,26 @@ const getPlayers = async () => {
     return await res.json();
 }
 
-const addPlayer = async (name) => {
-    console.log(name);
-    return await fetch(`${url}/players`, { 
+const addPlayer = async (body) => {
+    const res = await fetch(`${url}/players`, { 
         method: 'POST',
-        body: { name }
-    });
-}
-
-const addGame = async (table, winningSide) => {
-    console.log(winningSide);
-    return await fetch(`${url}/games`, {
-        method: 'POST',
-        body: { 
-            table,
-            winningSide
+        body: JSON.stringify(body),
+        headers: {
+            'Content-Type': 'application/json'
         }
     });
+    return await res.json();
+}
+
+const addGame = async (body) => {
+    const res = await fetch(`${url}/games`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return await res.json();
 }
 
 export {

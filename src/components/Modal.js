@@ -9,8 +9,9 @@ import {
     ContentCardFooter,
     ContentCardAction
 } from './ContentCard';
+import AddPlayerForm from './AddPlayerForm';
 
-const PlayerSelectModal = ({ visible, addPlayer, close, players }) => {
+const PlayerSelectModal = ({ visible, addPlayer, close, players, createPlayer }) => {
     return (
         <React.Fragment>
             { 
@@ -20,11 +21,9 @@ const PlayerSelectModal = ({ visible, addPlayer, close, players }) => {
                             <div className='modal-topbar'>
                                 <h1>Add Player</h1>
                                 <div>
-                                    <Button primary>New Player</Button>
                                     <Button onClick={close}>Close</Button>
                                 </div>
                             </div>
-                            
                             <ScrollableView>
                                 {
                                     players.map(player => (
@@ -43,6 +42,10 @@ const PlayerSelectModal = ({ visible, addPlayer, close, players }) => {
                                     ))
                                 }
                             </ScrollableView>
+                            <AddPlayerForm
+                                primary
+                                addPlayer={createPlayer}
+                            />
                         </ModalContent>
                     </ModalContainer>
                 )
@@ -77,7 +80,7 @@ const ModalContent = styled('div')`
 
     .modal-topbar {
         display: flex;
-        height: 3.5em;
+        height: 3em;
         padding: 0em 0em .5em 0em;
         box-sizing: border-box;
         align-items: center;
@@ -93,7 +96,7 @@ const ModalContent = styled('div')`
 
 const ScrollableView = styled('div')`
     background-color: #eee;
-    height: calc(100% - 3.5em);
+    height: calc(100% - 6.5em);
     overflow-y: auto;
     box-sizing: border-box;
     padding: .5em 1em 5em 1em;

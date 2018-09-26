@@ -6,13 +6,23 @@ import Button from './Button';
 // Utis / Variables
 import { TeamPropType } from '../propTypes';
 
-const Table = ({ players, onGameEnd, leave }) => {
+const Table = ({ players, onGameEnd, leave, playerObj }) => {
     return (
         <CenterFlexFiller direction='column'>
             <CenterFlex>
-                <TablePlayers players={players.left} side='left' leave={leave} />
+                <TablePlayers 
+                    players={players.left} 
+                    side='left' 
+                    leave={leave} 
+                    playerObj={playerObj}
+                />
                 <PingPongTable />
-                <TablePlayers players={players.right} side='right' leave={leave} />
+                <TablePlayers 
+                    players={players.right} 
+                    side='right' 
+                    leave={leave} 
+                    playerObj={playerObj}
+                />
             </CenterFlex>
             <CenterFlex padding='1em 0em'>
                 <Button 
@@ -81,13 +91,13 @@ const PingPongTable = styled('div')`
         box-sizing: border-box;
     }
 `;
-const TablePlayers = ({ players, side, leave }) => (
+const TablePlayers = ({ players, side, leave, playerObj }) => (
     <TablePlayersContainer>
         <TablePlayer side={side}>
             {
                 players.player1 && (
                     <React.Fragment>
-                        {players.player1}
+                        {playerObj[players.player1].name}
                         <HoverButton small primary onClick={() => leave(side, 'player1')}>Leave Game</HoverButton>
                     </React.Fragment>
                 )
@@ -97,7 +107,7 @@ const TablePlayers = ({ players, side, leave }) => (
             {
                 players.player2 && (
                     <React.Fragment>
-                        {players.player2}
+                        {playerObj[players.player2].name}
                         <HoverButton small primary onClick={() => leave(side, 'player2')}>Leave Game</HoverButton>
                     </React.Fragment>
                 )
