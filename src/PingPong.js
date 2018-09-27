@@ -32,6 +32,18 @@ class PingPong extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         const { boardClear, playerList } = this.state;
+        if (prevProps.players !== this.props.players) {
+            console.log('update players');
+            this.setState(prevState => {
+                let newPlayers = { ...prevState.players };
+                this.props.players.forEach(player => {
+                    newPlayers[player.id] = player;
+                })
+                return {
+                    players: newPlayers
+                }
+            })
+        }
         if (!this.gameInSession() && playerList.length && !boardClear) {
             this.fillTable();
         }
@@ -163,10 +175,10 @@ class PingPong extends Component {
         });
     }
 
-    openModal = () => {
+    openModal = async () => {
         this.setState({
             playerModalOpen: true
-        })
+        });
     }
 
     closeModal = () => {
@@ -203,7 +215,7 @@ class PingPong extends Component {
                     close={this.closeModal}
                 />
                 <PageBody>
-                    <Leaderboard playerList={this.playerInfoList()} />
+                    <Leaderboard playerList={propsPlayers} />
                     <Content>
                         <Table 
                             players={currentPlayers} 

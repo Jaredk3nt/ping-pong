@@ -34,7 +34,7 @@ class App extends Component {
             <ThemeProvider theme={theme}>
                 <React.Fragment>
                     <Navbar>
-                        <strong>CDK Table Tennis Doubles</strong>
+                        <strong>Table Tennis Doubles</strong>
                         <Button small onClick={this.changeColor}>Change Color</Button>
                     </Navbar>
                     <HttpHandler>
